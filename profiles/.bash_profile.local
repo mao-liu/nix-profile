@@ -1,0 +1,50 @@
+export BASH_PROFILE_LOCAL_LOADED=$0
+
+alias cdw='cd ~/code/mliu-midget/midget'
+alias pbcopy='xclip -selection c'
+alias vi='vimx'
+alias vim='vimx'
+
+#source ~/bin/activate_python2.7
+
+function activate_virtualenv
+{
+    export VIRTUAL_ENV_DISABLE_PROMPT=TRUE
+    source ${HOME}/local/virtualenv/python2.7/bin/activate
+}
+
+function activate_conda
+{
+    CONDA_PATH="${HOME}/local/miniconda2/bin"
+    PATH="${CONDA_PATH}:${PATH}"
+    export CONDA_PATH
+    export PATH
+
+    source $CONDA_PATH/activate default_py2
+
+    function activate () {
+        source $CONDA_PATH/activate $1
+    }
+
+    function deactivate () {
+
+        [ -f `which deactivate` ] && source deactivate
+
+        PATH=`echo "$PATH" | sed -e "s|${CONDA_PATH}:||g"`
+        export PATH
+
+        unset CONDA_PATH
+        unset -f activate
+        unset -f deactivate
+    }
+
+}
+
+
+export EDITOR='vimx'
+
+# added by Miniconda2 3.19.0 installer
+#export PATH="/home/accounts/mliu/local/miniconda2/bin:$PATH"
+
+
+unset BASH_PROFILE_LOCAL_LOADED

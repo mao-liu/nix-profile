@@ -1,0 +1,30 @@
+#/usr/bin/env python
+import numpy
+
+x = r"""
+        ~        & Expt.    & Particle Insertion & $\dcps{\phi}/k_B$   & $\dcps{\psi}/k_B$  & $(\dcps{\phi}+\dcps{\psi})/k_B$ & $T\, d(\Delta S_2/k_B)/dT$ & $T\, d(\Delta S_{\theta}/k_B)/dT$ & $T\, d(\Delta S_{\mathrm{E}}/k_B)/dT$ & $T\, d(\Delta S_{tet}/k_B)/dT$ \\
+          Ne       & $ 18.8 $ & $ 13.2 \pm 0.2 $   & $ 4.3 \pm 1.3 $  & $ 0.5 \pm 0.5 $ & $ 4.8 \pm 1.4 $           & $ 18.3\pm0.6 $             & $1.2\pm0.1$                       & $0.5\pm0.1$                           & $4.9\pm0.1$                    \\
+              Ar       & $ 26.8 $ & $ 17.3 \pm 0.6 $   & $ 10.0 \pm 4.3 $ & $ 2.6 \pm 0.9 $ & $ 12.6 \pm 4.4 $          & $ 24.0\pm1.5 $             & $2.0\pm0.3$                       & $0.7\pm0.1$                           & $5.7\pm0.2$                    \\
+                Kr       & $ 27.8 $ & $ 19.2 \pm 1.0 $   & $ 14.6 \pm 3.5 $ & $ 5.1 \pm 1.0 $ & $ 19.7 \pm 3.6 $          & $ 27.6\pm2.0 $             & $2.6\pm0.7$                       & $0.9\pm0.2$                           & $5.9\pm0.3$                    \\
+                  Xe       & $ 21.9 $ & $ 21.4 \pm 1.6 $   & $ 20.2 \pm 6.4 $ & $ 5.7 \pm 1.0 $ & $ 25.9 \pm 6.5 $          & $ 32.7\pm3.1 $             & $4.9\pm1.5$                       & $1.5\pm0.3$                           & $5.8\pm0.5$                    \\
+                    \ce{CH4} & $ 32.2 $ & $ 19.6 \pm 1.1 $   & $ 15.5 \pm 3.8 $ & $ 4.7 \pm 1.5 $ & $ 20.2 \pm 4.1 $          & $ 28.5\pm2.1 $             & $2.7\pm0.7$                       & $0.9\pm0.2$                           & $6.0\pm0.3$                    \\
+"""
+
+x = x.replace(r'\hline', '')
+tableRows = x.split(r'\\')
+table = None
+for i, t in enumerate(tableRows):
+ if t != '\n':
+  if table is None:
+   table = numpy.array(t.split('&'))
+  else:
+   table = numpy.vstack((table, numpy.array(t.split('&'))))
+
+tableTrans = table.T.tolist()
+
+tNew = ''
+for row in tableTrans:
+ for col in row:
+  tNew += col.strip() + ' & '
+ tNew = tNew[:-2] + r' \\' + '\n'
+print tNew

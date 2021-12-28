@@ -1,0 +1,98 @@
+#!/bin/bash
+
+print_help()
+{
+	echo "Usage: $0 [-s] [-o] MODE" ;
+	echo "	Applies permissions to all files recursively."
+	echo "Flags:"
+	echo "	-h : display this help screen"
+	echo "	-s : run commands as sudo"
+	echo "	-o : also run chown"
+	echo "Mode:"
+	echo "  Note that you may choose only one mode."
+	echo "	-a : Public folder - files have a+rw, folders have a+x, all files with +x permissions get a+x"
+	echo "	-r : Public read - files only have a+r/u+w, folders have a+x, all files with +x permissions only have u+x"
+	echo "	-p : Private - files only have u+rw, folders only have u+x, all files with +x permissions only have u+x"
+	echo "	-x : Clear executables - +x permissions are removed from files"
+}
+
+update_mode()
+{
+	newmode=$1
+	lenmode=${#fmode}
+	if [[ $lenmode -eq 0 ]]; then
+		echo "Mode ${newmode}"
+		fmode=$newmode
+	else
+		echo "Error: mode ${fmode} already specified. Cannot specify more than one mode."
+		echo "See -h for help."
+		exit 1
+	fi
+}
+
+chk_mode()
+{
+	lenmode=${#fmode}
+	if [[ $lenmode -eq 0 ]]; then
+		echo "Error: Mode not specified. Cannot continue."
+		echo "See -h for help."
+		exit 1
+	fi
+	
+}
+
+# check if args are supplied
+if [[ $# -eq 0 ]] ; then
+	print_help
+	exit 1
+fi
+fmode=""
+usesudo=""
+while getopts hsoarpx opt
+do
+	case "$opt" in
+		h) print_help; exit 1;;
+		s) usesudo="sudo";;
+		o) usechown=1;;
+		a) update_mode "a";;
+		r) update_mode "r";;
+		p) update_mode "p";;
+		x) update_mode "x";;
+		\?) print_help; exit 1;;
+	esac
+done	
+
+# check that we have a specified mode
+chk_mode
+
+if [[ $usechown -eq 1 ]]; then
+	# get the group name (first group in the groups of the user)
+	groupname=$( groups | awk '{print $1}' )
+	echo "Applying chown to $USER:$groupname ."
+	$usesudo chown -R $USER:$groupname .
+fi
+if [ $fmode = "a" ]; then
+	folderperm="777"
+	execperm="777"
+	fileperm="666"
+elif [ $fmode = "r" ]; then
+	folderperm="755"
+	execperm="755"
+	fileperm="644"
+elif [ $fmode = "p" ]; then
+	folderperm="700"
+	execperm="700"
+	fileperm="600"
+elif [ $fmode = "x" ]; then
+	folderperm="u+rwx"
+	execperm="a-x"
+	fileperm="u+rw"
+fi	
+	
+# Make every file and folder read+write for everyone
+echo "Applying file permissions: chmod $fileperm"
+$usesudo find . -type f ! -perm -u=x -exec chmod $fileperm {} \;
+echo "Applying folder folder permissions: chmod $folderperm"
+$usesudo find . -type d -exec chmod $folderperm {} \;
+echo "Applying permissions for executables: chmod $execperm"
+$usesudo find . -type f -perm -u=x -exec chmod $execperm {} \;

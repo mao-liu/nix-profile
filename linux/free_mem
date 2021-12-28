@@ -1,0 +1,13 @@
+#!/bin/bash
+
+free -h
+echo "-----------------------------------"
+echo -n -e "\rsync"
+sync
+echo -n -e "\rSetting /proc/sys/vm/drop_caches to 3..."
+echo 3 > /proc/sys/vm/drop_caches
+echo -n -e "\rSetting /proc/sys/vm/drop_caches to 0..."
+echo 0 > /proc/sys/vm/drop_caches
+echo ""
+echo "-----------------------------------"
+free -h

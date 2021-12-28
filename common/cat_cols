@@ -1,0 +1,50 @@
+#!/usr/bin/python
+
+import os
+import sys
+import string
+import subprocess
+
+args=sys.argv[1:]
+
+if (args[0]=="-s"):
+  use_sed=True
+  args.pop(0)
+
+  if (len(args)>0 and args[0].isdigit() and int(args[0])>0):
+    sed_n=args[0]
+    args.pop(0)
+  else:
+    sed_n="1"
+else:
+  use_sed=False
+
+cmdstr="cat "
+
+while len(args)>0:
+  # expects a file name
+  fname=args[0]
+  args.pop(0)
+
+  if not( os.path.isfile(fname) ):
+    print fname+" is not a real file."
+    os._exit(0)
+  
+  # expects a list of columns
+  cols=[]
+  if (len(args)>0 and args[0].isdigit() and int(args[0])>0):
+    cols.extend(["$"+args[0]])
+    args.pop(0)
+
+  if len(cols)==0:
+    print "No columns selected for "+fname
+    os.exit(0)
+  
+  cmdstr+="<( awk '{print "+'"\\t"'.join(cols)+"}' "+fname
+  if use_sed:
+    cmdstr+=" | sed 1,"+sed_n+"d"
+  cmdstr+=" ) "
+
+#print cmdstr
+
+subprocess.call(['bash', '-c', cmdstr ])

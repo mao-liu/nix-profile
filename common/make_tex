@@ -1,0 +1,24 @@
+#!/bin/bash
+
+texfile=$1
+stem=${texfile%.tex}
+
+pdflatex $texfile
+if [ $? != 0 ]; then
+  echo "Compilation failed."
+  exit 1
+fi
+
+bibtex $stem
+if [ $? != 0 ]; then 
+  echo "Bibtex failed."
+  exit 1
+fi
+
+pdflatex $texfile
+pdflatex $texfile
+
+# only open the compiled pdf if this script is invoked from an interactive terminal
+if [[ `ps -o stat= -p $PPID` == *"s"* ]]; then
+    open $stem.pdf
+fi

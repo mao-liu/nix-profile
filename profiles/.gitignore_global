@@ -1,0 +1,9 @@
+*~
+*.pyc
+.DS_Store
+.cache/
+.cache/**/.*
+.coverage
+.ipynb_checkpoints/
+__pycache__/
+.last_run

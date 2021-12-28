@@ -1,0 +1,31 @@
+startup_message off
+
+# keep scrollback n lines
+defscrollback 1000
+
+# use 256 colors
+term xterm-256color
+
+# screen status
+#backtick 1 5 5 true
+#termcapinfo rxvt* 'hs:ts=\E]2;:fs=\007:ds=\E]2;\007'
+#hardstatus string "screen (%n: %t)"
+#caption string "%{= kw}%Y-%m-%d;%c %{= kw}%-Lw%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+Lw%1`"
+#caption always
+
+# use X scrolling mechanism
+termcapinfo xterm* ti@:te@
+
+# turn off visual bell
+vbell off
+
+# unset SSH variables
+unsetenv SSH_TTY
+unsetenv SSH_CONNECTION
+unsetenv SSH_CLIENT
+
+# load profile again
+#shell -$SHELL
+
+screen 
+screen $SHELL -c 'screen -X caption always "$STY"'

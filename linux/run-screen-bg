@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "I require two arguments"
+  exit
+fi
+
+if [ $1 == "-n" ]; then
+  shift
+
+  if [ $1 -eq $1 ] 2>/dev/null && [ $1 -ge -20 ] && [ $1 -le 20 ]; then
+    s="nice -n $1 screen"
+    shift
+  else
+    s="nice -n 10 screen"
+  fi
+
+else
+  s="screen"
+fi
+
+screen_name=$1
+shift
+
+cmd=$1
+shift
+
+while [ "$#" -gt "0" ]; do
+  cmd="$cmd $1"
+  shift
+done
+
+$s -dmS $screen_name
+$s -S $screen_name -p 0 -X stuff "$cmd $(printf \\r)"
+screen -ls | grep $screen_name

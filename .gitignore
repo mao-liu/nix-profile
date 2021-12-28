@@ -1,0 +1,8 @@
+# OSX Finder thumbnail file
+*.DS_Store
+
+# OSX temporary files
+*~
+
+# normally .vim/.netrwhist, this is history file for vim
+*.netrwhist

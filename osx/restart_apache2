@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cmd="apachectl restart"
+echo $cmd
+sudo $cmd
+
+state="closed"
+time_i=`date +"%s"`
+
+echo -e "ELAPSED\tPORT\tSTATE\tSERVICE"
+while [ $state == "closed" ]; do
+  time_now=`date +"%s"`
+  elapsed=$(( $time_now - $time_i ))
+  
+  out=`nmap -p 80 localhost | grep -A1 STATE | tail -n1`
+  port=`echo $out | cut -f 1 -d ' '`
+  state=`echo $out | cut -f 2 -d ' '`
+  service=`echo $out | cut -f 3 -d ' '`
+  echo -en "\r$elapsed\t$port\t$state\t$service"
+  sleep 1
+done
+echo ""
+

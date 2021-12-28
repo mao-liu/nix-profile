@@ -1,0 +1,117 @@
+#!/usr/bin/env ruby
+require "#{File.join(File.dirname(__FILE__),'stat.rb')}"
+require 'micro-optparse'
+
+class String
+  def is_numeric?
+    true if Float(self) rescue false
+  end
+end
+
+all_are_numeric = lambda {|x|
+  valid = true
+  x.each {|x| valid = false unless x.is_numeric?}
+  x.each {|x| valid = false unless x.to_f >= 0 }
+  valid
+}
+
+@options = Parser.new do |p|
+  p.banner = "Summary statistics for columns of data, using double precision floats. See below for options"
+  p.version = "0.01"
+  p.option :poll, "Binary array specifying which columns to poll stats, dimension of the array must equal to the dimension of the stream, e.g. '--poll 0,1,1' will poll stats for the 2nd and 3rd column of a 3-column stream", :default => [],
+    :value_satisfies => all_are_numeric
+  p.option :live, "Print live status", :default => false
+  p.option :header, "Use if the stream contains a header", :default => false, :short => 't'
+  p.option :delimiter, "Specify the delimiting character (default is tab)", :default => "tsv", :value_in_set => ['tsv', 'csv', 'ssv']
+  p.option :drop, "Drop lines that are poorly formatted, instead of failing", :default => false
+  p.option :real, "In some cases where the variance is exactly 0, truncation errors can give rise to an imaginary part to stdev. Use this option to ignore the imaginary part.", :default => false
+end.process!
+
+if @options[:poll].empty?
+  $stderr.puts "--poll option not specified. Try the --poll --help for a further information."
+  exit
+end
+
+@options[:poll].map! {|d| d.to_f}
+
+@delimiters = {'tsv' => "\t", 'csv' => ",", 'ssv' => " "}
+
+@delimiter = @delimiters[@options[:delimiter]]
+
+def header?
+  @options[:header] && ARGF.lineno == 1
+end
+
+def columns line
+  line.split(@delimiter)
+end
+
+def drop? line
+  if line.length != @options[:poll].length
+    if @options[:drop]
+      true
+    else
+      $stderr.puts "There were #{line.length} columns on line #{ARGF.lineno}, but you gave #{@options[:poll].length} columns"
+      $stderr.puts "Perhaps this wasn't a #{@options[:delimiter]}. Try the -d --help for a list of filetypes"
+      $stderr.puts "If you think that some lines might be an issue, use the -r flag to drop bad lines"
+      throw :dropped
+    end
+  else
+    false
+  end
+end
+
+catch :dropped do
+  input = 0
+  output = 0
+  ncols=@options[:poll].length
+  sum = [0]*ncols
+  sum2 = [0]*ncols
+  min = [nil]*ncols
+  max = [nil]*ncols
+  stats = Stats.new "Summarizing", :input, :output, :dropped, :elapsed
+  ARGF.each do |line|
+    input += 1
+    row = line.chomp.split(@delimiter)
+    unless drop? row
+      if header?
+        puts "#" + line.chomp
+      else
+        row = row.map {|d| d.to_f}
+	sum=sum.each_with_index.map {|v,i| (@options[:poll][i]==0 ? 0 : v+row[i])}
+	sum2=sum2.each_with_index.map {|v,i| (@options[:poll][i]==0 ? 0 : v+row[i]**2)}
+	min=min.each_with_index.map {|v,i| (@options[:poll][i]==0 ? 0 : (v.nil? ? row[i] : (v>row[i] ? row[i] : v)))}
+        max=max.each_with_index.map {|v,i| (@options[:poll][i]==0 ? 0 : (v.nil? ? row[i] : (v<row[i] ? row[i] : v)))}
+      end
+      output += 1
+    end
+    stats.show(input,output) if @options[:live]
+  end
+  mean=sum.each_with_index.map {|v,i| v/(output.to_f)}
+  mean2=sum2.each_with_index.map {|v,i| v/(output.to_f)}
+  varp=mean.each_with_index.map {|v,i| mean2[i]-v**2}
+  vars=varp.each_with_index.map {|v,i| v*(output.to_f)/(output.to_f-1.0)}
+  sdp=varp.each_with_index.map {|v,i| v**0.5}
+  sds=vars.each_with_index.map {|v,i| v**0.5}
+  stderrs=sds.each_with_index.map {|v,i| v/((output.to_f)**0.5)}
+  if @options[:real]
+    sdp=sdp.each_with_index.map {|v,i| v.real}
+    sds=sds.each_with_index.map {|v,i| v.real}
+    stderrs=stderrs.each_with_index.map {|v,i| v.real}
+  end
+  counts=[output]*ncols
+  #print outputs now!
+  puts "n          :\t"+counts.map {|v| "%20d" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "sum(x)     :\t"+sum.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "sum(x**2)  :\t"+sum2.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "E(x)       :\t"+mean.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "E(x**2)    :\t"+mean2.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "var.p(x)   :\t"+varp.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "sd.p(x)    :\t"+sdp.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "var.s(x)   :\t"+vars.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "sd.s(x)    :\t"+sds.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "stderr.s(x):\t"+stderrs.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "min(x)     :\t"+min.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  puts "max(x)     :\t"+max.map {|v| "%20.10e" % v}.inject {|concat,elm| concat+"\t"+elm}
+  stats.finish(input,output)
+end

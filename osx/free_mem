@@ -1,0 +1,9 @@
+#!/bin/bash
+
+vm_stat | grep free
+echo "-----------------------------------"
+echo -n -e "\rpurge"
+purge
+echo ""
+echo "-----------------------------------"
+vm_stat | grep free
