@@ -1,0 +1,89 @@
+{
+    "editor.rulers": [
+        100,
+        120
+    ],
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.eggs": true,
+        "**/.ipynb_checkpoints": true,
+        "**/*.egg-info": true,
+        "**/Untitled*.ipynb": true,
+        "**/.terraform": true,
+        "**/terraform.tfstate.d": true,
+        "**/.vscode": true
+    },
+    "editor.insertSpaces": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.codeLens": true,
+    "editor.tabSize": 4,
+    "[terraform]": {
+        "editor.tabSize": 2
+    },
+    "[markdown]": {
+        "editor.wordWrap": "off"
+    },
+    "[json]": {
+        "editor.tabSize": 2
+    },
+    "[yaml]": {
+        "editor.tabSize": 2
+    },
+    "[html]": {
+        "editor.tabSize": 2,
+        "editor.detectIndentation": false
+    },
+    "[makefile]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4,
+        "editor.renderWhitespace": "boundary"
+    },
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false
+    },
+    "files.associations": {
+        //"*.tf": "terraform",
+        "*.tfvars": "terraform",
+        "*.md": "markdown",
+        "Makefile": "makefile",
+        "makefile": "makefile",
+        "Jenkinsfile*": "jenkinsfile"
+    },
+    "workbench.startupEditor": "none",
+    "files.trimTrailingWhitespace": true,
+    "editor.snippetSuggestions": "bottom",
+    "python.dataScience.allowImportFromNotebook": false,
+    "python.condaPath": "/Users/mao.liu/local/miniconda3/bin/conda",
+    "python.terminal.activateEnvironment": false,
+    "workbench.editor.showTabs": true,
+    "coverage-gutters.highlightlight": "rgba(166, 220, 1e/**/index.html.75)",
+    "coverage-gutters.highlightdark": "rgba(121, 10, 0.75)",
+    "coverage-gutters.coverageReportFileName": ".outputs/coverage/**/index.html",
+    "coverage-gutters.xmlname": "coverage.xml",
+    "files.autoSave": "off",
+    "window.zoomLevel": -1,
+    "terraform.telemetry.enabled": false,
+    "terminal.integrated.shell.osx": "/bin/bash",
+    "terminal.integrated.inheritEnv": false,
+    "python.dataScience.sendSelectionToInteractiveWindow": false,
+    "extensions.ignoreRecommendations": false,
+    "terraform.indexing": {
+        "enabled": false,
+        "liveIndexing": false,
+        "delay": 500,
+        "exclude": [
+            ".terraform/**/*",
+            "**/.terraform/**/*"
+        ]
+    },
+    "terraform.languageServer": {
+        "enabled": true,
+        "args": []
+    },
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "python.showStartPage": false
+}
+

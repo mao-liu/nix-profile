@@ -2,10 +2,15 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
+colorscheme distinguished
+
+"disable loading all the default config in Vim 8
+"let skip_defaults_vim=1
+set viminfo=""
+
 " =============== Pathogen Initialization ===============
 " This loads all the plugins in ~/.vim/bundle
 " Use tpope's pathogen plugin to manage all other plugins
-
 
 " ================ General Config ====================
 
@@ -23,9 +28,23 @@ set autoread                    "Reload files changed outside vim
 " http://items.sjbach.com/319/configuring-vim-right
 set hidden
 
+set paste
+"set list
+
+"set clipboard=exclude:.*
+set clipboard=unnamed
+
 "turn on syntax highlighting
-filetype plugin indent on
 syntax on
+
+highlight OverLength ctermbg=darkgrey ctermfg=white guibg=#592929
+"call matchadd('OverLength', '\%>100v.\+')
+
+highlight OverLength2 ctermbg=darkblue ctermfg=white guibg=#592929
+"call matchadd('OverLength2', '\%>120v.\+')
+
+highlight ExtraWhitespace ctermbg=grey ctermfg=white guibg=#592929
+"call matchadd('ExtraWhitespace', '\s\+$')
 
 " ================ Search Settings  =================
 
@@ -50,8 +69,13 @@ endif
 
 " ================ Indentation ======================
 
+"filetype plugin off
+"filetype indent on
+filetype indent off
+
 set autoindent
-set smarttab
+set smartindent
+"set smarttab
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
@@ -66,52 +90,14 @@ set foldmethod=indent       "fold based on indent
 set foldnestmax=3           "deepest fold is 3 levels
 set nofoldenable            "dont fold by default
 
+" ================ Completion =======================
+
+set wildmode=list:longest
+set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
+set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+
 " ================ Scrolling ========================
 
 set scrolloff=8             "Start scrolling when we're 8 lines away from margins
 set sidescrolloff=0
 set sidescroll=40
-
-" set the color scheme
-colorscheme distinguished
-
-" highlight text as red once it flows over 100 characters
-highlight GuideLength ctermbg=darkgray ctermfg=white guibg=darkgray
-match GuideLength /\%80v.\+/
-highlight OverLength ctermbg=red ctermfg=white guibg=red
-2match OverLength /\%120v.\+/
-" always highlight extra white spaces
-highlight ExtraWhitespace ctermbg=darkgray ctermfg=white guibg=darkgray
-let match_space = matchadd('ExtraWhitespace', '\s\+$')
-
-autocmd Filetype txt match none
-autocmd Filetype txt 2match none
-autocmd Filetype tex match none
-autocmd Filetype tex 2match none
-autocmd Filetype markdown match none
-autocmd Filetype markdown 2match none
-autocmd Filetype rst match none
-autocmd Filetype rst 2match none
-
-" set soft wrap for tex files
-au FileType tex set wrap
-au FileType txt set wrap
-au FileType markdown set wrap
-au FileType rst set wrap
-
-" re-map the up and down keys to navigate soft wrap lines instead of hard lines
-map <silent> <Up> gk
-imap <silent> <Up> <C-o>gk
-map <silent> <Down> gj
-imap <silent> <Down> <C-o>gj
-map <silent> <home> g<home>
-imap <silent> <home> <C-o>g<home>
-map <silent> <End> g<End>
-imap <silent> <End> <C-o>g<End>
-
-"execute pathogen#infect()
-set clipboard=unnamed
-set mouse=a
-
-set paste
-set ruler
