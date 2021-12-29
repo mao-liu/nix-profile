@@ -44,7 +44,7 @@
         "editor.detectIndentation": false
     },
     "files.associations": {
-        //"*.tf": "terraform",
+        "*.tf": "terraform",
         "*.tfvars": "terraform",
         "*.md": "markdown",
         "Makefile": "makefile",
@@ -65,8 +65,7 @@
     "files.autoSave": "off",
     "window.zoomLevel": -1,
     "terraform.telemetry.enabled": false,
-    "terminal.integrated.shell.osx": "/bin/bash",
-    "terminal.integrated.inheritEnv": false,
+    // "terminal.integrated.inheritEnv": false,
     "python.dataScience.sendSelectionToInteractiveWindow": false,
     "extensions.ignoreRecommendations": false,
     "terraform.indexing": {
@@ -79,11 +78,18 @@
         ]
     },
     "terraform.languageServer": {
-        "enabled": true,
-        "args": []
+        "external": true
     },
-    "telemetry.enableCrashReporter": false,
-    "telemetry.enableTelemetry": false,
-    "python.showStartPage": false
+    "telemetry.telemetryLevel": "off",
+    "python.showStartPage": false,
+    "workbench.colorCustomizations": {
+        "terminal.ansiRed":"#FB543F",
+        "terminal.ansiBlue":"#00a1f9",
+        // "terminal.ansiCyan":"#6ab2c4",
+        // "terminal.ansiGreen":"#95C085",
+        // "terminal.ansiMagenta":"#8F4673",
+        "terminal.ansiWhite":"#A89984",
+        "terminal.ansiYellow":"#FAC03B"
+    }
 }
 
