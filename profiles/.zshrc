@@ -1,3 +1,5 @@
+setopt BASH_REMATCH
+
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 autoload -U colors && colors

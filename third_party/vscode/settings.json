@@ -63,7 +63,6 @@
     "coverage-gutters.coverageReportFileName": ".outputs/coverage/**/index.html",
     "coverage-gutters.xmlname": "coverage.xml",
     "files.autoSave": "off",
-    "window.zoomLevel": -1,
     "terraform.telemetry.enabled": false,
     // "terminal.integrated.inheritEnv": false,
     "python.dataScience.sendSelectionToInteractiveWindow": false,
