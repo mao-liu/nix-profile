@@ -2,11 +2,11 @@ export EDITOR=vim
 
 export GNUTERM='x11'
 
-which gdircolors && eval `gdircolors`
+which gdircolors >/dev/null && eval `gdircolors`
 
-which gmake && alias make="gmake"
-which gls && alias ls="gls --color"
-which gecho && alias echo="gecho"
+which gmake >/dev/null && alias make="gmake"
+which gls >/dev/null && alias ls="gls --color"
+which gecho >/dev/null && alias echo="gecho"
 alias git-history="git log --graph --pretty=oneline --abbrev-commit --branches"
 alias git-clean="git fetch --prune && (git branch | egrep -v '(master|develop|\*)' | xargs git branch -d)"
 alias ssh-tunnel="ssh -t -D 1080"
